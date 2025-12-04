@@ -21,6 +21,13 @@ type SitePolicy struct {
 	SpecialChars   string
 }
 
+func sanitizeSiteKey(site string) string {
+	s := strings.TrimSpace(strings.ToLower(site))
+	s = strings.ReplaceAll(s, "/", "_")
+	s = strings.ReplaceAll(s, " ", "_")
+	return s
+}
+
 func mustUserHome() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -31,7 +38,7 @@ func mustUserHome() string {
 
 func siteConfigPath(site string) string {
 	home := mustUserHome()
-	return filepath.Join(home, ".config", "pw", "sites", site+".conf")
+	return filepath.Join(home, ".config", "pw", "sites", sanitizeSiteKey(site)+".conf")
 }
 
 func parseBool(s string) bool {
