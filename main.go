@@ -64,6 +64,13 @@ func mustGetDefaultSecretPath() string {
 	return filepath.Join(home, ".config", "pw", "secret")
 }
 
+func sanitizeSiteKey(site string) string {
+	s := strings.TrimSpace(strings.ToLower(site))
+	s = strings.ReplaceAll(s, "/", "_")
+	s = strings.ReplaceAll(s, " ", "_")
+	return s
+}
+
 func pw(site string) string {
 	secretPath := mustGetDefaultSecretPath()
 	secret := mustReadSecret(secretPath)
