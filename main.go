@@ -70,7 +70,7 @@ func pw(site string) string {
 
 	// 讀 site policy（找不到就會是 nil）
 	policy := loadSitePolicy(site)
-	slog.Debug("loaded site policy", "site", site, "policy", policy)
+	slog.Debug("loaded site policy", "has_policy", policy != nil)
 	var normalizer Normalizer = SegNormalizer{Policy: policy}
 
 	h := hmac.New(sha256.New, secret)
@@ -124,6 +124,8 @@ func main() {
 
 	var password string
 	if *legacyMode {
+		fmt.Fprintln(os.Stderr, "WARNING: Legacy mode is deprecated and insecure!")
+		fmt.Fprintln(os.Stderr, "WARNING: This mode returns a static password and should not be used.")
 		password = legacy(site)
 	} else {
 		password = pw(site)

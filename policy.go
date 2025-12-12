@@ -120,8 +120,8 @@ func applyPolicy(s string, p *SitePolicy) string {
 		}
 	}
 
-	slog.Debug("current password composition", "hasUpper", hasUpper, "hasLower", hasLower, "hasDigit", hasDigit, "hasSpecial", hasSpecial)
-	slog.Debug("policy requirements", "RequireUpper", p.RequireUpper, "RequireLower", p.RequireLower, "RequireDigit", p.RequireDigit, "RequireSpecial", p.RequireSpecial)
+	slog.Debug("password composition analysis", "hasUpper", hasUpper, "hasLower", hasLower, "hasDigit", hasDigit, "hasSpecial", hasSpecial)
+	slog.Debug("policy requirements check", "RequireUpper", p.RequireUpper, "RequireLower", p.RequireLower, "RequireDigit", p.RequireDigit, "RequireSpecial", p.RequireSpecial)
 
 	// 決定性挑一個 index 來改（不隨機，同 site 每次一樣）
 	pickIndex := func(label string) int {
@@ -135,30 +135,27 @@ func applyPolicy(s string, p *SitePolicy) string {
 	// 缺 upper
 	if p.RequireUpper && !hasUpper && len(b) > 0 {
 		i := pickIndex("upper")
-		orig := b[i]
-		idx := max(strings.IndexByte(base62Alphabet, orig), 0)
+		idx := max(strings.IndexByte(base62Alphabet, b[i]), 0)
 		b[i] = byte('A' + (idx % 26))
-		slog.Debug("adding required upper case letter", "index", i, "original", string(orig), "new", string(b[i]))
+		slog.Debug("added required upper case letter", "position", i)
 		hasUpper = true
 	}
 
 	// 缺 lower
 	if p.RequireLower && !hasLower && len(b) > 0 {
 		i := pickIndex("lower")
-		orig := b[i]
-		idx := max(strings.IndexByte(base62Alphabet, orig), 0)
+		idx := max(strings.IndexByte(base62Alphabet, b[i]), 0)
 		b[i] = byte('a' + (idx % 26))
-		slog.Debug("adding required lower case letter", "index", i, "original", string(orig), "new", string(b[i]))
+		slog.Debug("added required lower case letter", "position", i)
 		hasLower = true
 	}
 
 	// 缺 digit
 	if p.RequireDigit && !hasDigit && len(b) > 0 {
 		i := pickIndex("digit")
-		orig := b[i]
-		idx := max(strings.IndexByte(base62Alphabet, orig), 0)
+		idx := max(strings.IndexByte(base62Alphabet, b[i]), 0)
 		b[i] = byte('0' + (idx % 10))
-		slog.Debug("adding required digit", "index", i, "original", string(orig), "new", string(b[i]))
+		slog.Debug("added required digit", "position", i)
 		hasDigit = true
 	}
 
@@ -168,7 +165,7 @@ func applyPolicy(s string, p *SitePolicy) string {
 		h := sha256.Sum256([]byte(p.Site + "|special_char"))
 		j := int(h[1]) % len(p.SpecialChars)
 		b[i] = p.SpecialChars[j]
-		slog.Debug("adding required special character", "index", i, "new", string(b[i]))
+		slog.Debug("added required special character", "position", i)
 		hasSpecial = true
 	}
 
