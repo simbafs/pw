@@ -79,6 +79,22 @@ special_chars=!@#$%^&*
 | `special`       | Require at least one special character. | `false`       |
 | `special_chars` | A string of special characters to use.  | `!@#$%^&*`    |
 
+## Security
+
+This tool is designed with security as a primary concern. Key security features include:
+
+- **HMAC-SHA256** cryptographic hash for password generation
+- **Strict secret file permissions** (must be 0600) enforced at runtime
+- **Path traversal protection** for site configuration files
+- **No sensitive data in logs** - debug mode avoids logging site names or passwords
+
+⚠️ **Important Security Notes**:
+- The `-legacy` flag is **deprecated and insecure** - do not use it
+- Your secret file is your master key - protect it carefully
+- Use debug mode (`-debug`) only in secure, private environments
+
+For detailed security information, see [SECURITY.md](SECURITY.md).
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
